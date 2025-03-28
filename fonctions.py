@@ -27,6 +27,7 @@ def ajout(nomBd, row):
     with db.cursor() as c:
         try:
             c.execute("INSERT INTO " + nomBd + " VALUES " + long(len(row)), tuple(row))
+            print(nomBd + " : Ligne ajoutée")
         except mysql.connector.errors.IntegrityError:
             print(nomBd + " : La clé primaire déjà existante OU clé étrangère inexistante")
     db.close()
@@ -85,6 +86,8 @@ def nombre_colonnes(fichier_csv):
 def executer_requete(variable_requete, texte_requete, afficher_resultats, trouverSQL, fenetre):
     '''Exécute une requête SQL.'''
     requete = trouverSQL(variable_requete.get())
+    if requete == "NONE":
+        return messagebox.showerror("Erreur", "Veuillez sélectionner une requête SQL.")
     requete_personnalisee = texte_requete.get("1.0", "end").strip()
     if requete_personnalisee:
         requete = requete_personnalisee
