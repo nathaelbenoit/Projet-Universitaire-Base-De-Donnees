@@ -1,12 +1,13 @@
 from tkinter import *
 from tkinter import messagebox
 from fonctions import *
+from tkinter import ttk
 
 if __name__ == "__main__":
     fenetre = Tk()
     fenetre.title("Interface selmarin")
     
-    cadre = Frame(fenetre)
+    cadre = ttk.Frame(fenetre)
     cadre.pack(pady=10)
     
     # Section pour ajouter un fichier CSV
@@ -17,10 +18,10 @@ if __name__ == "__main__":
     variable_fichier = StringVar(fenetre)
     variable_fichier.set(fichiers_csv[0] if fichiers_csv else "")
     
-    liste_deroulante = OptionMenu(cadre, variable_fichier, *fichiers_csv)
+    liste_deroulante = ttk.Combobox(cadre, textvariable=variable_fichier, values=fichiers_csv, state="readonly")
     liste_deroulante.pack(pady=5)
     
-    bouton_valider = Button(cadre, text="Valider", command=lambda: ajoutExcelBd(variable_fichier.get(), nombre_colonnes(variable_fichier.get())))
+    bouton_valider = ttk.Button(cadre, text="Valider", command=lambda: ajoutExcelBd(variable_fichier.get(), nombre_colonnes(variable_fichier.get())))
     bouton_valider.pack(pady=5)
     
     # Section pour exécuter des requêtes SQL
@@ -55,7 +56,7 @@ if __name__ == "__main__":
     variable_requete = StringVar(fenetre)
     variable_requete.set(liste_sql[0] if liste_sql else "")
     
-    liste_requetes = OptionMenu(cadre, variable_requete, *liste_sql)
+    liste_requetes = ttk.Combobox(cadre, textvariable=variable_requete, values=liste_sql, state="readonly", width=50)
     liste_requetes.pack(pady=5)
     
     # Zone de texte pour écrire des requêtes SQL personnalisées
@@ -65,7 +66,7 @@ if __name__ == "__main__":
     texte_requete = Text(cadre, height=10, width=50)
     texte_requete.pack(pady=5)
 
-    bouton_requete = Button(cadre, text="Exécuter", command=lambda: executer_requete(variable_requete, texte_requete, afficher_resultats, lambda text: trouverSQL(text, liste_sql, requetes_sql),fenetre))
+    bouton_requete = ttk.Button(cadre, text="Exécuter", command=lambda: executer_requete(variable_requete, texte_requete, afficher_resultats, lambda text: trouverSQL(text, liste_sql, requetes_sql),fenetre))
     bouton_requete.pack(pady=5)
     
     fenetre.mainloop()
