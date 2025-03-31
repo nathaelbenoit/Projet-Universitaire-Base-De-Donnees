@@ -3,6 +3,7 @@ import csv
 from datetime import datetime
 from tkinter import *
 from tkinter import messagebox
+from tkinter import ttk
 import mysql.connector
 import os
 
@@ -103,17 +104,27 @@ def executer_requete(variable_requete, texte_requete, afficher_resultats, trouve
     except Exception as e:
         messagebox.showerror("Erreur", f"Une erreur s'est produite : {e}")
 
-def afficher_resultats(colonnes,resultats,fenetre):
-    '''Affiche les résultats de la requête SQL.'''
+def afficher_resultats(colonnes, resultats, fenetre):
     fenetre_resultats = Toplevel(fenetre)
     fenetre_resultats.title("Résultats de la requête SQL")
-    texte_resultats = Text(fenetre_resultats)
-    texte_resultats.pack()
-    texte_resultats.insert("end", "|".join(colonnes) + "\n")
-    texte_resultats.insert("end", "-" * (len('|'.join(colonnes)) +2)+ "\n")
-    for ligne in resultats:
-        texte_resultats.insert("end",'|'.join(map(str,ligne)) + "\n")
 
+    tree = ttk.Treeview(fenetre_resultats, columns=colonnes, show="headings")
+
+    # Ajouter les en-têtes
+    for col in colonnes:
+        tree.heading(col, text=col, anchor="center")
+        tree.column(col, anchor="center", width=150)  # Ajuste les largeurs si nécessaire
+
+    # Insérer les données dans le Treeview
+    for ligne in resultats:
+        tree.insert("", "end", values=ligne)
+
+    scrollbar = ttk.Scrollbar(fenetre_resultats, orient="vertical", command=tree.yview)
+    tree.configure(yscroll=scrollbar.set)
+
+    tree.pack(padx=10, pady=10, fill="both", expand=True)
+    scrollbar.pack(side="right", fill="y")
+    
 def trouverSQL(text, liste_sql, requetes_sql):
     '''Trouve la requête SQL correspondant au texte.'''
     index = liste_sql.index(text)
