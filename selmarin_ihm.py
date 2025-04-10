@@ -1,7 +1,8 @@
 from tkinter import *
 from tkinter import messagebox
-from fonctions import *
+from selmarin import *
 from tkinter import ttk
+
 
 if __name__ == "__main__":
     fenetre = Tk()
@@ -39,24 +40,24 @@ if __name__ == "__main__":
     textRequete.pack(pady=5)
     
     nomsSQL = ["",
-                "Moyenne des prix",
-                "Clients n'ayant pas commandé tous les produits",
-                "Classement des clients qui sont le plus commandé",
+                "Prix moyen des produits par tonne",
+                "Clients n'ayant pas commandé certains produits",
+                "Classement des clients qui ont le plus commandé",
                 "Stock restant par produit",
                 "Saunier ayant fourni le plus de sel",
                 "Chiffre d'affaires total par année",
                 "Clients ayant passé plus de 3 commandes",
-                "Modifier le nom d'un client",
+                "Renommer le client 11 en INTERMARCHÉ",
                 "Classement des produits par nb de commandes",
                 "Évolution des prix entre 2023 et 2025"]
     requeteSQL = [
         "NONE",
-        "SELECT libPdt, AVG(prixVente) As moyennePrixVente FROM prix, produit  WHERE produit.NUMPDT = prix.NUMPDT GROUP BY prix.NUMPDT;",
+        "SELECT libPdt, AVG(prixVente) As prix_moyen_T FROM prix, produit  WHERE produit.NUMPDT = prix.NUMPDT GROUP BY prix.NUMPDT;",
         "SELECT client.nomCli, client.precisionCli, client.villeCli, (SELECT libPdt FROM produit WHERE NUMPDT = 1) AS produit_non_commande FROM client WHERE NUMCLI NOT IN (SELECT DISTINCT s.NUMCLI FROM sortie s, concerner c WHERE s.NUMSORT = c.NUMSORT AND c.NUMPDT = 1);",
-        "SELECT client.nomCli, client.precisionCli, client.villeCli, SUM(concerner.qteSort_t_ * prix.prixVente) AS total_achat FROM client, sortie, concerner, prix WHERE client.NUMCLI = sortie.NUMCLI AND sortie.NUMSORT = concerner.NUMSORT AND concerner.NUMPDT = prix.NUMPDT AND prix.numAnnee = YEAR(sortie.dateSort) GROUP BY client.NUMCLI ORDER BY total_achat DESC;",
+        "SELECT client.nomCli, client.precisionCli, client.villeCli, SUM(concerner.qteSort_t_ * prix.prixVente) AS somme_achats_euros FROM client, sortie, concerner, prix WHERE client.NUMCLI = sortie.NUMCLI AND sortie.NUMSORT = concerner.NUMSORT AND concerner.NUMPDT = prix.NUMPDT AND prix.numAnnee = YEAR(sortie.dateSort) GROUP BY client.NUMCLI ORDER BY somme_achats_euros DESC;",
         "SELECT p.libPdt,(SUM(e.qteEnt__t_) - SUM(c.qteSort_t_)) AS stock_restant FROM produit p, entree e, concerner c WHERE p.NUMPDT = e.NUMPDT AND p.NUMPDT = c.NUMPDT GROUP BY p.NUMPDT;",
         "SELECT s.nomSau, s.prenomSau, s.villeSau, SUM(c.qteSort_t_) AS total_sel_fournit FROM saunier s, concerner c, sortie so, entree e WHERE e.NUMSAU = s.NUMSAU AND c.NUMSORT = so.NUMSORT AND c.NUMPDT = 1  AND e.NUMPDT = c.NUMPDT GROUP BY s.NUMSAU ORDER BY total_sel_fournit DESC;",
-        "SELECT a.numAnnee, SUM((p.prixVente * c.qteSort_t_)) AS chiffre_affaires_total FROM annee a, prix p, concerner c, sortie so WHERE p.numAnnee = a.numAnnee AND c.NUMSORT = so.NUMSORT AND c.NUMPDT = p.NUMPDT GROUP BY a.numAnnee ORDER BY a.numAnnee;",
+        "SELECT a.numAnnee, SUM((p.prixVente * c.qteSort_t_)) AS chiffre_affaires_total FROM annee a, prix p, concerner c, sortie so WHERE p.numAnnee = a.numAnnee AND c.NUMSORT = so.NUMSORT AND c.NUMPDT = p.NUMPDT GROUP BY a.numAnnee ORDER BY a.numAnnee DESC;",
         "SELECT cl.nomCli, COUNT(so.NUMSORT) AS nombre_achats FROM client cl, sortie so WHERE cl.NUMCLI = so.NUMCLI GROUP BY cl.NUMCLI HAVING COUNT(so.NUMSORT) > 3 ORDER BY nombre_achats DESC;",
         "UPDATE client SET nomCli = 'INTERMARCHÉ' WHERE NUMCLI = 11;",
         "SELECT p.libPdt, COUNT(c.NUMSORT) AS nombre_commandes FROM produit p LEFT JOIN concerner c ON p.NUMPDT = c.NUMPDT GROUP BY p.NUMPDT, p.libPdt ORDER BY nombre_commandes DESC;",
@@ -89,7 +90,7 @@ if __name__ == "__main__":
     tables = ["annee", "client", "concerner", "entree", "prix", "produit", "saunier", "sortie"]
 
     for nom_table in tables:
-        bouton = ttk.Button(cadre_droit, text=nom_table.capitalize(), width=25, height=10,
+        bouton = ttk.Button(cadre_droit, text=nom_table.capitalize(), padding=(0,8), width=25,
                         command=lambda table=nom_table: (
                             zoneTextPerso.delete("1.0", END),
                             zoneTextPerso.insert(END, f"SELECT * FROM {table};"),
