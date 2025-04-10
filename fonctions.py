@@ -58,6 +58,8 @@ def ajoutExcelBd(nomFichier, longueur):
                     ajout("concerner", rowConcerner)
                 
                 ajout(nomFichier, row)
+        messagebox.showinfo("Bonne exécution", "Les tables ont été correctement remplies")
+
     except FileNotFoundError:
         print(f"Erreur : Le fichier {nomFichier} n'a pas été trouvé.")
     except Exception as e:
@@ -87,20 +89,27 @@ def nombre_colonnes(fichier_csv):
 def executer_requete(variable_requete, texte_requete, afficher_resultats, trouverSQL, fenetre):
     '''Exécute une requête SQL.'''
     requete = trouverSQL(variable_requete.get())
-    if requete == "NONE":
-        return messagebox.showerror("Erreur", "Veuillez sélectionner une requête SQL.")
     requete_personnalisee = texte_requete.get("1.0", "end").strip()
     if requete_personnalisee:
         requete = requete_personnalisee
+    if requete == "NONE":
+        return messagebox.showwarning("Attention", "Veuillez sélectionner une requête SQL.")
     try:
         db = mysql.connector.connect(host="localhost", user="root", password="", database="selmarin_final")
         db.autocommit = True
-        with db.cursor() as c:
-            c.execute(requete)
-            colonnes = [desc[0] for desc in c.description]
-            resultats = c.fetchall()
-        db.close()
-        afficher_resultats(colonnes,resultats,fenetre)
+        if requete[:6].upper() != 'UPDATE' and requete[:6].upper() != 'INSERT'  and requete[:6].upper() != 'DELETE':
+            with db.cursor() as c:
+                c.execute(requete)
+                colonnes = [desc[0] for desc in c.description]
+                resultats = c.fetchall()
+            db.close()
+            afficher_resultats(colonnes,resultats,fenetre)
+        else:
+            with db.cursor() as c:
+                c.execute(requete)
+            db.close()
+            messagebox.showinfo("Bonne exécution", "Requête exécutée avec succès")
+
     except Exception as e:
         messagebox.showerror("Erreur", f"Une erreur s'est produite : {e}")
 
