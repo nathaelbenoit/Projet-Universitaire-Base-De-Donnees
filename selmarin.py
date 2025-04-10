@@ -9,17 +9,7 @@ import os
 
 def long(longueur : int) -> str:
     '''Retourne le texte correspondant à la longueur de la liste.'''
-    if longueur == 1:
-        text = "(%s)"
-    elif longueur == 2:
-        text = "(%s, %s)"
-    elif longueur == 3:
-        text = "(%s, %s, %s)"
-    elif longueur == 4:
-        text = "(%s, %s, %s, %s)"
-    elif longueur == 5:
-        text = "(%s, %s, %s, %s, %s)"
-    return text
+    return "(" + ", ".join(["%s"] * longueur) + ")"
 
 def ajout(nomBd, row):
     '''Ajoute une ligne à la base de données.'''
@@ -39,7 +29,6 @@ def ajoutExcelBd(nomFichier, longueur):
     db.autocommit = True
     
     long(longueur)
-
     try:
         with open(nomFichier +".csv", 'r') as file:
             reader = csv.reader(file, delimiter=";")

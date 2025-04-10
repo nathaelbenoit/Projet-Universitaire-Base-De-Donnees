@@ -3,7 +3,6 @@ from tkinter import messagebox
 from selmarin import *
 from tkinter import ttk
 
-
 if __name__ == "__main__":
     fenetre = Tk()
     fenetre.title("Interface selmarin")
@@ -20,7 +19,7 @@ if __name__ == "__main__":
     cadre_droit.pack(side="right", padx=10, anchor="n")
     
     # Section pour ajouter un fichier CSV
-    TextCsv = Label(cadre_gauche, text="Ajouter un fichier CSV à la base de données")
+    TextCsv = Label(cadre_gauche, text="Ajouter un fichier CSV à la base de données",font=("Arial", 10, "bold"))
     TextCsv.pack(pady=5)
     
     fichiersCsv = lister_fichiers_csv()
@@ -33,10 +32,8 @@ if __name__ == "__main__":
     boutonCsv = ttk.Button(cadre_gauche, text="Valider", command=lambda: ajoutExcelBd(variableCSV.get(), nombre_colonnes(variableCSV.get())))
     boutonCsv.pack(pady=5)
     
-    
-    
     # Section pour exécuter des requêtes SQL
-    textRequete = Label(cadre_gauche, text="Exécuter une requête SQL")
+    textRequete = Label(cadre_gauche, text="Exécuter une requête SQL",font=("Arial", 10, "bold"))
     textRequete.pack(pady=5)
     
     nomsSQL = ["",
@@ -71,7 +68,7 @@ if __name__ == "__main__":
     listeRequetes.pack(pady=5)
     
     # Zone de texte pour écrire des requêtes SQL personnalisées
-    textPerso = Label(cadre_gauche, text="Ou écrire une requête SQL personnalisée")
+    textPerso = Label(cadre_gauche, text="Ou écrire une requête SQL personnalisée",font=("Arial", 8, "bold"))
     textPerso.pack(pady=5)
     
     zoneTextPerso = Text(cadre_gauche, height=10, width=50)
@@ -84,7 +81,7 @@ if __name__ == "__main__":
 
     tables = ["annee", "client", "concerner", "entree", "prix", "produit", "saunier", "sortie"]
 
-    textTables = Label(cadre_droit, text="Visualiser une table", font=("Arial", 11, "bold"))
+    textTables = Label(cadre_droit, text="Visualiser une table", font=("Arial", 10, "bold"))
     textTables.pack(pady=5)
 
     tables = ["annee", "client", "concerner", "entree", "prix", "produit", "saunier", "sortie"]
