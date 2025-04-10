@@ -7,25 +7,35 @@ if __name__ == "__main__":
     fenetre = Tk()
     fenetre.title("Interface selmarin")
     
-    cadre = ttk.Frame(fenetre)
-    cadre.pack(pady=10)
+    cadre_principal = Frame(fenetre)
+    cadre_principal.pack(padx=10, pady=10, fill="both")
+
+    # Cadre gauche pour les fonctionnalités CSV & requêtes
+    cadre_gauche = ttk.Frame(cadre_principal)
+    cadre_gauche.pack(side="left", padx=10, anchor="n")
+
+    # Cadre droit pour les boutons d'affichage de tables
+    cadre_droit = ttk.Frame(cadre_principal)
+    cadre_droit.pack(side="right", padx=10, anchor="n")
     
     # Section pour ajouter un fichier CSV
-    TextCsv = Label(cadre, text="Ajouter un fichier CSV à la base de données")
+    TextCsv = Label(cadre_gauche, text="Ajouter un fichier CSV à la base de données")
     TextCsv.pack(pady=5)
     
     fichiersCsv = lister_fichiers_csv()
     variableCSV = StringVar(fenetre)
     variableCSV.set(fichiersCsv[0] if fichiersCsv else "")
     
-    listeCsv = ttk.Combobox(cadre, textvariable=variableCSV, values=fichiersCsv, state="readonly")
+    listeCsv = ttk.Combobox(cadre_gauche, textvariable=variableCSV, values=fichiersCsv, state="readonly")
     listeCsv.pack(pady=5)
     
-    boutonCsv = ttk.Button(cadre, text="Valider", command=lambda: ajoutExcelBd(variableCSV.get(), nombre_colonnes(variableCSV.get())))
+    boutonCsv = ttk.Button(cadre_gauche, text="Valider", command=lambda: ajoutExcelBd(variableCSV.get(), nombre_colonnes(variableCSV.get())))
     boutonCsv.pack(pady=5)
     
+    
+    
     # Section pour exécuter des requêtes SQL
-    textRequete = Label(cadre, text="Exécuter une requête SQL")
+    textRequete = Label(cadre_gauche, text="Exécuter une requête SQL")
     textRequete.pack(pady=5)
     
     nomsSQL = ["",
@@ -56,17 +66,36 @@ if __name__ == "__main__":
     variableRequete = StringVar(fenetre)
     variableRequete.set(nomsSQL[0] if nomsSQL else "")
     
-    listeRequetes = ttk.Combobox(cadre, textvariable=variableRequete, values=nomsSQL, state="readonly", width=50)
+    listeRequetes = ttk.Combobox(cadre_gauche, textvariable=variableRequete, values=nomsSQL, state="readonly", width=50)
     listeRequetes.pack(pady=5)
     
     # Zone de texte pour écrire des requêtes SQL personnalisées
-    textPerso = Label(cadre, text="Ou écrire une requête SQL personnalisée")
+    textPerso = Label(cadre_gauche, text="Ou écrire une requête SQL personnalisée")
     textPerso.pack(pady=5)
     
-    zoneTextPerso = Text(cadre, height=10, width=50)
+    zoneTextPerso = Text(cadre_gauche, height=10, width=50)
     zoneTextPerso.pack(pady=5)
 
-    boutonRequete = ttk.Button(cadre, text="Exécuter", command=lambda: executer_requete(variableRequete, zoneTextPerso, afficher_resultats, lambda text: trouverSQL(text, nomsSQL, requeteSQL),fenetre))
+    boutonRequete = ttk.Button(cadre_gauche, text="Exécuter", command=lambda: executer_requete(variableRequete, zoneTextPerso, afficher_resultats, lambda text: trouverSQL(text, nomsSQL, requeteSQL),fenetre))
     boutonRequete.pack(pady=5)
     
+    # Section pour visualiser les tables
+
+    tables = ["annee", "client", "concerner", "entree", "prix", "produit", "saunier", "sortie"]
+
+    textTables = Label(cadre_droit, text="Visualiser une table", font=("Arial", 11, "bold"))
+    textTables.pack(pady=5)
+
+    tables = ["annee", "client", "concerner", "entree", "prix", "produit", "saunier", "sortie"]
+
+    for nom_table in tables:
+        bouton = ttk.Button(cadre_droit, text=nom_table.capitalize(), width=25, height=10,
+                        command=lambda table=nom_table: (
+                            zoneTextPerso.delete("1.0", END),
+                            zoneTextPerso.insert(END, f"SELECT * FROM {table};"),
+                            executer_requete(variableRequete, zoneTextPerso, afficher_resultats, lambda text: "NONE", fenetre),
+                            zoneTextPerso.delete("1.0", END)
+                        ))
+        bouton.pack(pady=3)
+        
     fenetre.mainloop()
