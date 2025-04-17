@@ -94,3 +94,32 @@ JOIN prix ON p.NUMPDT = prix.NUMPDT
 WHERE prix.numAnnee IN (2023, 2025)
 GROUP BY p.NUMPDT, p.libPdt
 ORDER BY evolution_pourcentage DESC;
+
+-- 11) 
+CREATE VIEW Sauniers_Millionnaires AS
+SELECT 
+    s.nomSau AS Nom_Saunier,
+    s.prenomSau AS Prenom_Saunier,
+    s.villeSau AS Ville,
+    SUM(c.qteSort_t_ * p.prixVente) AS Chiffre_Affaires
+FROM 
+    saunier s
+INNER JOIN 
+    entree e ON s.numSau = e.numSau
+INNER JOIN 
+    concerner c ON e.numPdt = c.numPdt
+INNER JOIN 
+    sortie so ON c.numSort = so.numSort
+INNER JOIN 
+    prix p ON p.numPdt = c.numPdt
+WHERE 
+    p.numAnnee = YEAR(so.dateSort)
+GROUP BY 
+    s.numSau
+HAVING 
+    SUM(c.qteSort_t_ * p.prixVente) > 1000000
+ORDER BY 
+    Chiffre_Affaires DESC;
+
+SELECT * FROM Sauniers_Millionnaires;
+
