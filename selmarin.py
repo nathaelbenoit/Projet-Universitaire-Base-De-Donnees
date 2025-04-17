@@ -90,11 +90,10 @@ def ajoutExcelBd(nomFichier: str, longueur: int) -> None:
 
     except FileNotFoundError:
         # Gère le cas où le fichier CSV n'existe pas
-        print(f"Erreur : Le fichier {nomFichier} n'a pas été trouvé.")
-    except Exception as e:
+        messagebox.showwarning("Attention", f"Le fichier {nomFichier} n'a pas été trouvé.")
+    except Exception:
         # Gère les autres erreurs
-        print(f"Erreur lors de la lecture du fichier {nomFichier} : {e}")
-
+        messagebox.showwarning("Attention", f"Erreur lors de la lecture du fichier {nomFichier}")
     db.close()  # Ferme la connexion à la base de données
 
 def lister_fichiers_csv() -> list:
@@ -131,10 +130,10 @@ def nombre_colonnes(nomFichier: str) -> int:
                 return len(row_split)
     except FileNotFoundError:
         # Gère le cas où le fichier CSV n'existe pas
-        print(f"Erreur : Le fichier {nomFichier}.csv n'existe pas.")
-    except Exception as e:
+        messagebox.showwarning("Attention", f"Le fichier {nomFichier} n'a pas été trouvé.")
+    except Exception:
         # Gère les autres erreurs
-        print(f"Erreur lors de la lecture du fichier {nomFichier}.csv : {e}")
+        messagebox.showerror("Attention", f"Erreur lors de la lecture du fichier {nomFichier}")
 
 def executer_requete(variable_requete, texte_requete, afficher_resultats, trouverSQL, fenetre) -> None:
     '''
