@@ -56,6 +56,7 @@ if __name__ == "__main__":
         "Clients ayant passé plus de 3 commandes",
         "Renommer le client 11 en INTERMARCHÉ",
         "Classement des produits par nb de commandes",
+        "Sauniers demi-milliardaires",
         "Évolution des prix entre 2023 et 2025"
     ]
 
@@ -71,6 +72,7 @@ if __name__ == "__main__":
         "SELECT cl.nomCli, COUNT(so.NUMSORT) AS nombre_achats FROM client cl, sortie so WHERE cl.NUMCLI = so.NUMCLI GROUP BY cl.NUMCLI HAVING COUNT(so.NUMSORT) > 3 ORDER BY nombre_achats DESC;",
         "UPDATE client SET nomCli = 'INTERMARCHÉ' WHERE NUMCLI = 11;",
         "SELECT p.libPdt, COUNT(c.NUMSORT) AS nombre_commandes FROM produit p LEFT JOIN concerner c ON p.NUMPDT = c.NUMPDT GROUP BY p.NUMPDT, p.libPdt ORDER BY nombre_commandes DESC;",
+        "CREATE VIEW Sauniers_Demimilliardaire AS SELECT s.nomSau AS Nom_Saunier,s.prenomSau AS Prenom_Saunier,s.villeSau AS Ville,SUM(c.qteSort_t_ * p.prixVente) AS Chiffre_Affaires FROM saunier s INNER JOIN entree e ON s.numSau = e.numSau INNER JOIN concerner c ON e.numPdt = c.numPdt INNER JOIN sortie so ON c.numSort = so.numSort INNER JOIN prix p ON p.numPdt = c.numPdt WHERE p.numAnnee = YEAR(so.dateSort) GROUP BY s.numSau HAVING SUM(c.qteSort_t_ * p.prixVente) > 500000000 ORDER BY Chiffre_Affaires DESC; SELECT * FROM Sauniers_Demimilliardaire;",
         "SELECT p.libPdt,ROUND(((MAX(CASE WHEN prix.numAnnee = 2025 THEN prix.prixVente END) - MAX(CASE WHEN prix.numAnnee = 2023 THEN prix.prixVente END)) / MAX(CASE WHEN prix.numAnnee = 2023 THEN prix.prixVente END) * 100), 2) AS evolution_pourcentage FROM produit p JOIN prix ON p.NUMPDT = prix.NUMPDT WHERE prix.numAnnee IN (2023, 2025) GROUP BY p.NUMPDT, p.libPdt ORDER BY evolution_pourcentage DESC;"
     ]
 
@@ -81,6 +83,11 @@ if __name__ == "__main__":
     # Menu déroulant pour sélectionner une requête SQL prédéfinie
     listeRequetes = ttk.Combobox(cadre_gauche, textvariable=variableRequete, values=nomsSQL, state="readonly", width=50)
     listeRequetes.pack(pady=5)
+
+    def clear_zone_text(event):
+        zoneTextPerso.delete("1.0", END)
+
+    listeRequetes.bind("<<ComboboxSelected>>", clear_zone_text)
 
     # Zone de texte pour écrire une requête SQL personnalisée
     textPerso = Label(cadre_gauche, text="Ou écrire une requête SQL personnalisée", font=("Arial", 8, "bold"))

@@ -165,28 +165,22 @@ def executer_requete(variable_requete, texte_requete, afficher_resultats, trouve
         db = mysql.connector.connect(host="localhost", user="root", password="", database="selmarin_final")
         db.autocommit = True
 
-        if requete[:6].upper() not in ['UPDATE', 'INSERT', 'DELETE', 'DROP', 'CREATE', 'ALTER']:
-            # Exécute une requête de type SELECT et récupère les résultats
-            if requete.upper() == 'DROP DATABASE SELMARIN_FINAL' or requete.upper() == 'CREATE DATABASE IF EXISTS SELMARIN_FINAL' or requete.upper() == 'DROP DATABASE SELMARIN_FINAL;' or requete.upper() == 'CREATE DATABASE IF EXISTS SELMARIN_FINAL;':
-                # Gère la suppression de la base de données
-                messagebox.showwarning("Attention", "Vous ne pouvez pas supprimer cette base de données.")
-                return
-            with db.cursor() as c:
-                c.execute(requete)
-                colonnes = [desc[0] for desc in c.description]
-                resultats = c.fetchall()
-            db.close()
-            # Affiche les résultats dans une fenêtre
-            afficher_resultats(colonnes, resultats, fenetre)
-            
-        else:
-            # Exécute une requête de modification (UPDATE, INSERT, DELETE, DROP, CREATE, ALTER)
-            with db.cursor() as c:
-                c.execute(requete)
-            db.close()
-            # Affiche un message de succès
-            messagebox.showinfo("Bonne exécution", "Requête exécutée avec succès")
+        requetes = [r.strip() for r in requete.split(';') if r.strip()]
+        with db.cursor() as c:
+            for req in requetes:
+                if req.upper() != 'DROP DATABASE SELMARIN_FINAL' and req.upper() != 'CREATE DATABASE IF EXISTS SELMARIN_FINAL' and req.upper() != 'DROP DATABASE SELMARIN_FINAL;' and req.upper() != 'CREATE DATABASE IF EXISTS SELMARIN_FINAL;':
+                    c.execute(req)
+                else :
+                    messagebox.showwarning("Attention", "Vous ne pouvez pas supprimer cette base de données.")
 
+                if req[:6].upper() == 'SELECT':
+                    colonnes = [desc[0] for desc in c.description]
+                    resultats = c.fetchall()
+                    afficher_resultats(colonnes, resultats, fenetre)
+                
+                else:
+                    messagebox.showinfo("Bonne exécution", "Requête exécutée avec succès")
+        
     except Exception as e:
         # Gère les erreurs d'exécution
         messagebox.showerror("Erreur", f"Une erreur s'est produite : {e}")

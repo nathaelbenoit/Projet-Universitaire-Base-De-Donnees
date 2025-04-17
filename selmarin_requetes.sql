@@ -95,7 +95,7 @@ WHERE prix.numAnnee IN (2023, 2025)
 GROUP BY p.NUMPDT, p.libPdt
 ORDER BY evolution_pourcentage DESC;
 
--- 11) 
+-- 11) Sauniers demi-milliardaires
 CREATE VIEW Sauniers_Millionnaires AS
 SELECT 
     s.nomSau AS Nom_Saunier,
@@ -117,7 +117,7 @@ WHERE
 GROUP BY 
     s.numSau
 HAVING 
-    SUM(c.qteSort_t_ * p.prixVente) > 1000000
+    SUM(c.qteSort_t_ * p.prixVente) > 500000000
 ORDER BY 
     Chiffre_Affaires DESC;
 
